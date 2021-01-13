@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Simple General Forum</title>
+</head>
+
+<!-- ctrl + K + F 누르면 정렬 -->
+<body>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>날짜</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in board_list %}
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+                <td>{{ item[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr/>
+    <br/>
+    <button class="btn btn-primary float-right" onclick="window.location.href='{{ url_for('write') }}';">글쓰기</button>
+    <div>
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="/">1</a></li>
+            <li class="page-item"><a class="page-link" href="/board/2">2</a></li>
+            <li class="page-item"><a class="page-link" href="/board/3">3</a></li>
+            <li class="page-item"><a class="page-link" href="/board/4">4</a></li>
+            <li class="page-item"><a class="page-link" href="/board/5">5</a></li>
+        </ul>
+    </div>
+</body>
+</html>

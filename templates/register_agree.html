@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple General Forum</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        body{
+            margin-left:10%;
+            margin-right:10%;
+        }
+        .center_container{
+            text-align: left;
+            position: absolute;
+            top: 57%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @media screen and (max-width: 1400px) and (min-width: 576px){ 
+            .center_container {
+                text-align: left;
+                position: absolute;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @media screen and (max-width: 575px) and (min-width: 405px){ 
+            .center_container {
+                text-align: left;
+                position: absolute;
+                top: 60%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @media screen and (max-width: 404px) and (min-width: 200px){ 
+            .center_container {
+                text-align: left;
+                position: absolute;
+                top: 69%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+
+        .agree_container{
+            margin-bottom: 50px;
+        }
+        textarea{
+            resize: none;
+        }
+        textarea.form-control-lg{
+            font-size: small;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1>Simple Forum</h1>
+            <p></p>
+            <h6>made by vkdnjznd</h6>
+        </div>
+        <div style="text-align: center;"><h2>Register Page</h2><hr/></div>
+
+        <div class="center_container">
+            <form method="post">
+                <div class="agree_container">
+                    <h6>Terms of Service<span style="color:red;">(required)</span></h6>
+                    <textarea class="form-control" cols="40" rows="3" >abcdefghijklmnopqrstuvwxyz</textarea>
+                    <div class="custom-control custom-checkbox" style="float:right; margin-top:5px;">
+                        <input type="checkbox" id="checkbox1" name="agree_1" class="custom-control-input">
+                        <label class="custom-control-label" for="checkbox1">Agree</label>
+                    </div>
+                </div>
+                
+                <div class="agree_container">
+                    <h6>Privacy Policy<span style="color:red;">(required)</span></h6>
+                    <textarea class="form-control" cols="40" rows="3" >abcdefghijklmnopqrstuvwxyz</textarea>
+                    <div class="custom-control custom-checkbox" style="float:right; margin-top:5px;">
+                        <input type="checkbox" id="checkbox2" name="agree_2" class="custom-control-input">
+                        <label class="custom-control-label" for="checkbox2">Agree</label>
+                    </div>
+                </div>
+
+                <div class="footer" style="float:right;">
+                    <button type="submit" class="btn btn-primary btn-md">Next</button>
+                    <button type="button" class="btn btn-secondary btn-md">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

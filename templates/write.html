@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>글쓰기</title>
+</head>
+
+<body>
+    <div class="container">
+        <form method="POST">
+            <table class="table table-bordered">
+                <thead>
+                    <caption class="text-center" style="caption-side:top;">글쓰기</caption>
+                </thead>
+                <tbody>
+                    <form method="POST">
+                        <tr>
+                            <td>제목</td>
+                            <td><input type="text" name="title" size="24"></td>
+                        </tr>
+                        <tr>
+                            <td>내용</td>
+                            <td><textarea name="content" colspan="10" class="form-control"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td>글쓴이</td>
+                            <td><input type="text" name="writer" size="12"></td>
+                        </tr>
+
+                </tbody>
+            </table>
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary">등록</button>
+                <button type="submit" name = "cancel" class="btn btn-primary">취소</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+
+</html>
