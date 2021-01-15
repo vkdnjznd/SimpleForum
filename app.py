@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import pymysql
+from register_security import *
 
 app = Flask(__name__)
 
@@ -64,11 +65,9 @@ def index():
         print(data)
         return render_template('home.html')
 
-@app.route('/register/agree', methods=['GET', 'POST'])
-def register_agree_step():
-    # register 주소에서 POST 요청이 들어왔을경우
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
-        # form 태그에서 보낸 데이터는 request.form 으로 전달받는다
         data = request.form
         # print(data)
         # --> ImmutableMultiDict([('agree_1', 'on'), ('agree_2', 'on')])
@@ -83,9 +82,40 @@ def register_agree_step():
             insert_data(data)
             return redirect(url_for('index'))
     
-    # register 주소에서 GET 요청이 들어왔을경우
+    elif request.method == "GET":
+        params = request.args.to_dict()
+        if not params:
+            return render_template('access_error.html')
+
+        if params['step'] == "agree":
+            return render_template('register_agree.html')
+        elif params['step'] == "create":
+            if not params['RegisterToken'] or params['RegisterToken'] == "undefined":
+                return render_template('access_error.html')
+
+            rc = RegisterCipher()
+            enc = rc.decrypt_str(params['RegisterToken'])
+            try:
+                if (not enc and rc.get_timeover(enc)):
+                    return render_template('access_error.html')
+                else:
+                    return render_template('register_create.html')
+            except:
+                return render_template('access_error.html')
+        else:
+            return render_template('access_error.html')
+
     else:
-        return render_template('register_agree.html')
+        return redirect(url_for('index'))
+
+@app.route('/getRegisterToken', methods = ['POST'])
+def genToken():
+    rc = RegisterCipher()
+    token = rc.encrypt_str(rc.genTime)
+    if '/' in token:
+        return genToken()
+    return jsonify({'token' : token})
+
 
 @app.route('/write', methods=['GET', 'POST'])
 def write():

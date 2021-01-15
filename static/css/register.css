@@ -1,0 +1,52 @@
+body{
+    margin-left:10%;
+    margin-right:10%;
+}
+.center_container{
+    text-align: left;
+    position: absolute;
+    top: 57%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width: 1400px) and (min-width: 576px){ 
+    .center_container {
+        text-align: left;
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media screen and (max-width: 575px) and (min-width: 405px){ 
+    .center_container {
+        text-align: left;
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media screen and (max-width: 404px) and (min-width: 200px){ 
+    .center_container {
+        text-align: left;
+        position: absolute;
+        top: 69%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+
+.agree_container{
+    margin-bottom: 50px;
+}
+textarea{
+    resize: none;
+}
+textarea.form-control-lg{
+    font-size: small;
+}
