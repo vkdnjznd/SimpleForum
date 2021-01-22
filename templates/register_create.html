@@ -1,32 +1,37 @@
 {% extends "register_base.html" %}
 
+
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 col-md-offset-5">
-                <form method="POST">
-                    <div class="form-group">
-                        <label for="id" class=col-form-label">User ID</label>
-                        <input type="text" class="form-control" id="id" name="id" placeholder="only available in English(Max length 16)" required="required" />
-                    </div>
-                    <div class="form-group">
-                        <label for="nickname" class=col-form-label">Nickname</label>
-                        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Max length 16" required="required" />
-                    </div>
-                    <div class="form-group">
-                        <label for="password" class=col-form-label">Password</label>
-                        <input type="text" class="form-control" id="password" name="password" placeholder="Password " required="required" />
-                    </div>
-                    <div class="form-group">
-                        <label for="password_c" class=col-form-label">Password Confirm</label>
-                        <input type="text" class="form-control" id="password_c" name="password_c" placeholder="Password Confirm" required="required" />
-                    </div>
-                    <div style="float: right;">
-                        <button type="submit" class="btn btn-primary">OK</button>
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}';" >Cancel</button>
-                    </div> 
-                </form>
+    <div class="center_container">
+        <form method="POST">
+            <div class="form-group">
+                <label for="id" class=col-form-label">User ID</label>
+                <input type="text" class="form-control" id="id" name="id" placeholder="Your ID" required="required" onkeyup="idValidator();" />
             </div>
-        </div>
+            <span name = "noticeValid" id = "id_Valid"></span>
+
+            <div class="form-group">
+                <label for="nickname" class=col-form-label">Nickname</label>
+                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Your Nickname" required="required" onkeyup="nickValidator();" />
+            </div>
+            <span name = "noticeValid" id = "nick_Valid"></span>
+
+            <div class="form-group">
+                <label for="password" class=col-form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password " required="required" onkeyup="pValidator();" />
+            </div>
+            <span name = "noticeValid" id = "pass_Valid"></span>
+
+            <div class="form-group">
+                <label for="password_c" class=col-form-label">Password Confirm</label>
+                <input type="password" class="form-control" id="password_c" name="password_c" placeholder="Password Confirm" required="required" onkeyup="pcValidator();" />
+            </div>
+            <span name = "noticeValid" id = "passc_Valid"></span>
+
+            <div style="float: right;">
+                <button type="submit" class="btn btn-primary">OK</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}';" >Cancel</button>
+            </div> 
+        </form>
     </div>
 {% endblock %}

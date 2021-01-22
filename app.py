@@ -96,7 +96,7 @@ def register():
             rc = RegisterCipher()
             enc = rc.decrypt_str(params['RegisterToken'])
             try:
-                if (not enc and rc.get_timeover(enc)):
+                if (not enc or rc.get_timeover(enc)):
                     return render_template('access_error.html')
                 else:
                     return render_template('register_create.html')
@@ -112,8 +112,6 @@ def register():
 def genToken():
     rc = RegisterCipher()
     token = rc.encrypt_str(rc.genTime)
-    if '/' in token:
-        return genToken()
     return jsonify({'token' : token})
 
 

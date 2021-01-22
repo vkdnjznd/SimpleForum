@@ -22,15 +22,10 @@ class RegisterCipher:
         raw = self.pad(raw).encode('utf-8')
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt( raw ))
+        return base64.urlsafe_b64encode(iv + cipher.encrypt( raw ))
 
     def decrypt(self, enc):
-        altchars = b'+/' 
-        enc = re.sub(rb'[^a-zA-Z0-9%s]+' % altchars, b'', enc)  # normalize
-        missing_padding = len(enc) % 4
-        if missing_padding:
-            enc += b'=' * (4 - missing_padding)
-        enc = base64.b64decode(enc)
+        enc = base64.urlsafe_b64decode(enc)
         iv = enc[:16]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return self.unpad(cipher.decrypt(enc[16:]))
@@ -44,11 +39,11 @@ class RegisterCipher:
         return self.decrypt(enc).decode('utf-8')
     
     def get_timeover(self, now):
-        return abs((datetime.strptime(self.genTime, '%Y-%m-%d %H:%M:%S.%f') - datetime.strptime(now, '%Y-%m-%d %H:%M:%S.%f')).seconds) > MAINTAIN_TIME_MIN
+        return (datetime.strptime(self.genTime, '%Y-%m-%d %H:%M:%S.%f') - datetime.strptime(now, '%Y-%m-%d %H:%M:%S.%f')).seconds >= MAINTAIN_TIME_MIN
 
 if __name__ == "__main__":
     rg = RegisterCipher()
     enc = rg.encrypt_str(rg.genTime)
-    raw = rg.decrypt_str("uH6saN3sKTeEO7fG4MU5gliBlo3EEbC5C0+AyOghAwAJYnlgzjHo6ij5fNXw623C")
+    # raw = rg.decrypt_str("uH6saN3sKTeEO7fG4MU5gliBlo3EEbC5C0+AyOghAwAJYnlgzjHo6ij5fNXw623C")
     print(enc)
-    print(raw)
+    # print(raw)

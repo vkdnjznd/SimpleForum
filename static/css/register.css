@@ -50,3 +50,8 @@ textarea{
 textarea.form-control-lg{
     font-size: small;
 }
+
+span[id $= "_Valid"]{
+    display: inline;
+    color:red;
+}
