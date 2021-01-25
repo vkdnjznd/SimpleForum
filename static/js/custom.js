@@ -1,4 +1,4 @@
-// register function
+// register page open function
 function openRegisterPage(step){
     var current_url = location.protocol + "//" + location.host;
     var register_url = current_url + "/register";
@@ -32,7 +32,6 @@ function openRegisterPage(step){
 };
 
 // register Validation Functions
-
 function checkSpace(str) { 
     if (str.search(/\s/) != -1) { 
         return true; 
@@ -42,90 +41,106 @@ function checkSpace(str) {
     } 
 }
 
-function clearValidNotice(){
-    var noticeValids = document.getElementsByName("noticeValid");
-    
-    for (var i = 0; i < noticeValids.length; i++){
-        document.getElementsByName("noticeValid")[i].innerHTML = "";
-    }
-}
 
 function idValidator(){
-    clearValidNotice();
-
     const MIN_LENGTH = 4;
     const MAX_LENGTH = 16;
 
+    var ele = document.getElementById("id");
     var id = document.getElementById("id").value;
-    if (id == null) return;
+    var message = "";
+
+    if (id == null || id == "") return;
 
     if (checkSpace(id)){
-        document.getElementById("id_Valid").innerHTML = "ID can't have white spaces";
-        document.getElementById("id").focus();
-        document.getElementById("id").value = id.replace(' ', '');
-        return;
+        message = "ID can't have white spaces";
     }
-
-    if (id.length < MIN_LENGTH){
-        document.getElementById("id_Valid").innerHTML = "ID must be at least ${MIN_LENGTH} characters";
-        return;
+    else if (id.length < MIN_LENGTH){
+        message = "ID must be at least " + MIN_LENGTH + " characters";
     }
     else if (MAX_LENGTH < id.length){
-        document.getElementById("id_Valid").innerHTML = "ID must be at most ${MAX_LENGTH} characters";
-        return;
+        message = "ID must be at most " + MAX_LENGTH + " characters";
+    }
+    else {
+        for( var i=0; i < id.length;i++){         
+            var c = id.charCodeAt(i);
+            // Check each character is included in the range of numbers and alphabet
+            if( !( (0x61 <= c && c <= 0x7A) || (0x41 <= c && c <= 0x5A) || (0x30 <= c && c <= 0x39 )) ) {   
+                message = "Only English and Numbers are allowed for ID";
+                break;
+            }
+        }
     }
 
-    for( var i=0; i < id.length;i++){         
-        var c = id.charCodeAt(i);
-        // Check each character is included in the range of numbers and alphabet
-        if( !( (0x61 <= c && c <= 0x7A) || (0x41 <= c && c <= 0x5A) || (0x30 <= c && c <= 0x39 )) ) {        
-            document.getElementById("id_Valid").innerHTML = "Only English and Numbers are allowed for ID";
-            return;
-        }
-      }     
-    
-    // DB 중복검사 필요 
-    document.getElementById("id_Valid").innerHTML = "Available ID";
+    // DB 중복검사 필요
+    if (! message.length == 0){
+        ele.style.color = "red";
+        ele.style.backgroundImage = "url(static/image/x2.png)";
+    }
+    else{
+        message = "Available ID";
+        ele.style.color = "green";
+        ele.style.backgroundImage = "url(static/image/o.png)";
+    }
+
+    ele.style.backgroundRepeat = "no-repeat";
+    ele.style.backgroundSize = "24px 24px";
+    ele.style.backgroundPosition = "center right";
+
+    $('#id').attr('title', message);
     return;
 };
 
 function nickValidator(){
-    clearValidNotice();
-
     const MIN_LENGTH = 2;
     const MAX_LENGTH = 16;
 
+    var ele = document.getElementById("nickname");
     var nick = document.getElementById("nickname").value;
-    if (nick == null) return;
+    var message = "";
+
+    if (nick == null || nick == "") return;
 
     if (checkSpace(nick)){
-        document.getElementById("nick_Valid").innerHTML = "Nickname can't have white spaces";
-        document.getElementById("nickname").focus();
-        document.getElementById("nickname").value = nick.replace(' ', '');
-        return;
+        message = "Nickname can't have white spaces";
     }
-
-    if (nick.length < MIN_LENGTH){
-        document.getElementById("nick_Valid").innerHTML = "Nickname must be at least ${MIN_LENGTH} characters";
-        return;
+    else if (nick.length < MIN_LENGTH){
+        message = "Nickname must be at least " + MIN_LENGTH + " characters";
+        
     }
     else if (MAX_LENGTH < nick.length){
-        document.getElementById("nick_Valid").innerHTML = "Nickname must be at most ${MAX_LENGTH} characters";
-        return;
+        message = "Nickname must be at most " + MAX_LENGTH + " characters";
+        
     } 
     
-    document.getElementById("nick_Valid").innerHTML = "Available Nickname";
+    if (! message.length == 0){
+        ele.style.color = "red";
+        ele.style.backgroundImage = "url(static/image/x2.png)";
+    }
+    else{
+        message = "Available Nickname";
+        ele.style.color = "green";
+        ele.style.backgroundImage = "url(static/image/o.png)";
+    }
+
+    ele.style.backgroundRepeat = "no-repeat";
+    ele.style.backgroundSize = "24px 24px";
+    ele.style.backgroundPosition = "center right";
+
+    $('#nickname').attr('title', message);
+    
     return;
 };
 
 function pValidator(){
-    clearValidNotice();
-
     const MIN_LENGTH = 8;
     const MAX_LENGTH = 32;
 
+    var ele = document.getElementById("password");
     var pw = document.getElementById("password").value;
-    if (pw == null) return;
+    var message = "";
+
+    if (pw == null || pw == "") return;
 
     var num = pw.search(/[0-9]/g);
     var eng = pw.search(/[a-zA-Z]/ig);
@@ -133,55 +148,111 @@ function pValidator(){
     var kor = pw.search(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/);
 
     if (checkSpace(pw)){
-        document.getElementById("pass_Valid").innerHTML = "Password can't have white spaces";
-        document.getElementById("password").focus();
-        document.getElementById("password").value = pw.replace(' ', '');
-        return;
+        message = "Password can't have white spaces";
     }
-
-    if (kor > 0){
-        document.getElementById("pass_Valid").innerHTML = "Password must be alphabet or digit or special symbol";
-        return;
+    else if (kor != -1){
+        message = "Password must be alphabet or digit or special symbol";
     }
-
-    if (pw.length < MIN_LENGTH){
-        document.getElementById("pass_Valid").innerHTML = "Password must be at least ${MIN_LENGTH} characters";
-        return;
+    else if (pw.length < MIN_LENGTH){
+        message = "Password must be at least " + MIN_LENGTH + " characters";
     }
     else if (MAX_LENGTH < pw.length){
-        document.getElementById("pass_Valid").innerHTML = "Password must be at most ${MAX_LENGTH} characters";
-        return;
+        message = "Password must be at most " + MAX_LENGTH + " characters";
+    }
+    else if (num < 0 || eng < 0 || spe < 0){
+        message = "Password must contain numbers, alphabets, and special symbols";
     }
 
-    if (num < 0 || eng < 0 || spe < 0){
-        document.getElementById("pass_Valid").innerHTML = "Password must contain numbers, alphabets, and special symbols";
+    if (! message.length == 0){
+        ele.style.color = "red";
+        ele.style.backgroundImage = "url(static/image/x2.png)";
+    }
+    else{
+        message = "Available Password";
+        ele.style.color = "green";
+        ele.style.backgroundImage = "url(static/image/o.png)";
     }
 
-    document.getElementById("pass_Valid").innerHTML = "Available Password";
+    ele.style.backgroundRepeat = "no-repeat";
+    ele.style.backgroundSize = "24px 24px";
+    ele.style.backgroundPosition = "center right";
+
+    $('#password').attr('title', message);
     return;
 };
 
 function pcValidator(){
-    clearValidNotice();
-
     var pw = document.getElementById("password").value;
     var pwc = document.getElementById("password_c").value;
+    var message = "";
+    var ele = document.getElementById("password_c");
 
-    if (pw == null || pwc == null) return;
+    if (pw == null || pwc == null || pwc == "") return;
 
     if (pw.length == 0){
-        document.getElementById("passc_Valid").innerHTML = "Please enter your the password first";
+        message = "Please enter your password first";
         document.getElementById("password_c").value = "";
         document.getElementById("password").focus();
-        return;
+    }
+    else if (!(pw === pwc)){
+        message = "Confirm password must be the same as the password";
     }
 
-    if (!(pw === pwc)){
-        document.getElementById("passc_Valid").innerHTML = "Confrim password must be the same as the password";
-        return;
+    if (! message.length == 0){
+        ele.style.color = "red";
+        ele.style.backgroundImage = "url(static/image/x2.png)";
+    }
+    else{
+        message = "Password Confirmed";
+        ele.style.color = "green";
+        ele.style.backgroundImage = "url(static/image/o.png)";
     }
 
-    document.getElementById("passc_Valid").innerHTML = "Password Confirmed";
+    ele.style.backgroundRepeat = "no-repeat";
+    ele.style.backgroundSize = "24px 24px";
+    ele.style.backgroundPosition = "center right";
+
+    $('#password_c').attr('title', message);
     return;
 };
 
+function setTooltipHTML(type, min, max){
+    if (type == 'id'){
+        var html;
+
+        html = '<p>ID Rules</p><p>';
+        html += '<li>Only English and Numbers are allowed for ID</li>';
+        html += '<li>ID cannot have white spaces</li>';
+        html += '<li>ID must be at least ' + min + ' characters</li>';
+        html += '<li>ID must be at most ' + max + ' characters</li>';        
+        html += '</p>';
+
+        $('#id-tips').attr('data-bs-original-title', html);
+    }
+    else if (type == 'nickname'){
+        var html;
+
+        html = '<p>Nickname Rules</p><p>';
+        html += '<li>Nickname cannot have white spaces</li>';
+        html += '<li>Nickname must be at least ' + min + ' characters</li>';
+        html += '<li>Nickname must be at most ' + max + ' characters</li>';        
+        html += '</p>';
+
+        $('#nick-tips').attr('data-bs-original-title', html);
+    }
+    else if (type == 'password'){
+        var html;
+
+        html = '<p>Password Rules</p><p>';
+        html += '<li>Password cannot have white spaces</li>';
+        html += '<li>Password must be consist of alphabet and digit and special symbol</li>';
+        html += '<li>Password must be at least ' + min + ' characters</li>';
+        html += '<li>Password must be at most ' + max + ' characters</li>';        
+        html += '</p>';
+
+        $('#pass-tips').attr('data-bs-original-title', html);
+    }
+    else{
+        return;
+    }
+}

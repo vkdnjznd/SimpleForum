@@ -51,7 +51,9 @@ textarea.form-control-lg{
     font-size: small;
 }
 
-span[id $= "_Valid"]{
-    display: inline;
-    color:red;
+.tooltip-inner{
+    text-align: left;
+    width: 400px !important;
+    max-width: 400px !important;
+    overflow: auto;
 }

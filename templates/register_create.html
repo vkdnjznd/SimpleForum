@@ -1,33 +1,48 @@
 {% extends "register_base.html" %}
 
-
 {% block content %}
     <div class="center_container">
         <form method="POST">
             <div class="form-group">
-                <label for="id" class=col-form-label">User ID</label>
-                <input type="text" class="form-control" id="id" name="id" placeholder="Your ID" required="required" onkeyup="idValidator();" />
+                <label for="id" class=col-form-label">
+                    User ID
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16" id="id-tips" data-toggle="tooltip">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </label>
+                <input type="text" class="form-control" spellcheck="false" id="id" name="id" placeholder="Your ID" required="required" data-toggle="tooltip" onkeyup="idValidator();" />
             </div>
-            <span name = "noticeValid" id = "id_Valid"></span>
+            
 
             <div class="form-group">
-                <label for="nickname" class=col-form-label">Nickname</label>
-                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Your Nickname" required="required" onkeyup="nickValidator();" />
+                <label for="nickname" class=col-form-label">
+                    Nickname
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16" id="nick-tips" data-toggle="tooltip">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </label>
+                <input type="text" class="form-control" spellcheck="false" id="nickname" name="nickname" placeholder="Your Nickname" required="required" data-toggle="tooltip" onkeyup="nickValidator();" />
             </div>
-            <span name = "noticeValid" id = "nick_Valid"></span>
 
             <div class="form-group">
-                <label for="password" class=col-form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password " required="required" onkeyup="pValidator();" />
+                <label for="password" class=col-form-label">
+                    Password
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16" id="pass-tips" data-toggle="tooltip">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </label>
+                <input type="password" class="form-control" spellcheck="false" id="password" name="password" placeholder="Password " required="required" data-toggle="tooltip" onkeyup="pValidator();" />
             </div>
-            <span name = "noticeValid" id = "pass_Valid"></span>
+        
 
             <div class="form-group">
                 <label for="password_c" class=col-form-label">Password Confirm</label>
-                <input type="password" class="form-control" id="password_c" name="password_c" placeholder="Password Confirm" required="required" onkeyup="pcValidator();" />
+                <input type="password" class="form-control" spellcheck="false" id="password_c" name="password_c" placeholder="Password Confirm" required="required" data-toggle="tooltip" onkeyup="pcValidator();" />
             </div>
-            <span name = "noticeValid" id = "passc_Valid"></span>
-
+            
             <div style="float: right;">
                 <button type="submit" class="btn btn-primary">OK</button>
                 <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}';" >Cancel</button>
