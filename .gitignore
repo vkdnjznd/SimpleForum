@@ -1,7 +1,8 @@
 # created by virtualenv automatically
 
-
+.git/
 .vs/
 .vscode/
 sf/
 __pycache__/
+tempCodeRunnerFile.py

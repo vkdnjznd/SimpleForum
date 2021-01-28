@@ -1,60 +1,33 @@
 # -*- coding: utf-8 -*
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import pymysql
+from flask_wtf.csrf import CSRFProtect, validate_csrf
+from flask_bcrypt import Bcrypt
 from register_security import *
+from schema import models
 
-app = Flask(__name__)
 
-# Mysql Connect information
-def get_connection():
-    conn = pymysql.connect(host = 'localhost', user = 'test', password = '1234', db = 'mydb', charset = 'utf8')
-    return conn
+def formdata_to_dict(data):
+    data = {name: key for name, key in data.items()}
+    return data
 
-def check_id_db(id):
-    conn = get_connection()
-    curs = conn.cursor()
+# define and settings app
+def create_app():
+    app = Flask(__name__)
+    APP_SECRET_KEY = "APP_SECRET_KEY"
+    
+    app.config['SECRET_KEY'] = APP_SECRET_KEY
+    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://forum_admin:1234@localhost:3306/forum"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['BCRYPT_LEVEL'] = 10
+    
+    return app
 
-    sql = "select id from user_tb where id = (%s)"
-    curs.execute(sql, (id))
-    rows = curs.fetchall()
 
-    conn.close()
-
-    if (len(rows) == 0):
-        return False
-    else:
-        return True
-
-def insert_data(data):
-    conn = get_connection()
-    curs = conn.cursor()
-
-    sql = "insert into user_tb(id, password) values (%s, %s)"
-    curs.execute(sql, (data['id'], data['password']))
-
-    conn.commit()
-    conn.close()
-
-def check_login(data):
-    conn = get_connection()
-    curs = conn.cursor()
-
-    err_msg = ""
-    if (check_id_db(data['id'])):
-        sql = "select password from user_tb where id = (%s)"
-        curs.execute(sql, data['id'])
-        password = curs.fetchone()
-        conn.close()
-
-        if password[0] == data['password']:
-            return err_msg
-        else:
-            err_msg = "비밀번호가 틀립니다."
-            return err_msg
-    else:
-        conn.close()
-        err_msg = "아이디가 존재하지 않습니다."
-        return err_msg
+app = create_app()
+bcrypt = Bcrypt(app)
+csrf = CSRFProtect()
+csrf.init_app(app)
+models.db.init_app(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -68,20 +41,22 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        data = request.form
         # print(data)
-        # --> ImmutableMultiDict([('agree_1', 'on'), ('agree_2', 'on')])
+        # --> ImmutableMultiDict([('id', '1234123'), ('nickname', '1234123'), ('password', '1234qwer!'), ('password_c', '1234qwer!')])
 
-        if (data['agree_1'] == 'on' and data['agree_2'] == 'on'):
-            # Generate Key..
-            return render_template('register_agree.html')
+        data = formdata_to_dict(request.form)
+        del data['csrf_token']
 
-        if (data['password'] != data['c_password']):
-            return render_template('register_create.html')    
-        else:
-            insert_data(data)
-            return redirect(url_for('index'))
-    
+        validator = RegisterValidator(data)
+        validator.validate()
+
+        if (validator.result):
+            enc_password = bcrypt.generate_password_hash(data['password'])
+            user = models.User(data['id'], data['nickname'], enc_password)
+            user.add_user()
+
+        return render_template('register_result.html', result=validator.result)
+
     elif request.method == "GET":
         params = request.args.to_dict()
         if not params:
@@ -94,8 +69,8 @@ def register():
                 return render_template('access_error.html')
 
             rc = RegisterCipher()
-            enc = rc.decrypt_str(params['RegisterToken'])
             try:
+                enc = rc.decrypt_str(params['RegisterToken'])
                 if (not enc or rc.get_timeover(enc)):
                     return render_template('access_error.html')
                 else:
@@ -113,6 +88,15 @@ def genToken():
     rc = RegisterCipher()
     token = rc.encrypt_str(rc.genTime)
     return jsonify({'token' : token})
+
+@app.route('/checkDuplicated_ID', methods = ['POST'])
+def checkID():
+    data = request.form
+    data = formdata_to_dict(data)
+
+    validator = RegisterValidator(data, ['id'])
+    validator.validate()
+    return jsonify({'result' : str(validator.result)})
 
 
 @app.route('/write', methods=['GET', 'POST'])

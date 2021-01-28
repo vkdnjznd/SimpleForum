@@ -1,8 +1,24 @@
-{% extends "register_base.html" %}
+{% extends "register_layout.html" %}
 
 {% block content %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(
+                {
+                    container: 'body',
+                    html: true,
+                    placement: 'right',
+                    delay: {show:100, hide:200},
+                    trigger: 'hover focus'
+                }
+            );
+            setTooltipHTML('id', 4, 16);
+            setTooltipHTML('nickname', 2, 16);
+            setTooltipHTML('password', 8, 32);
+        });
+    </script>
     <div class="center_container">
-        <form method="POST">
+        <form method="POST" autocomplete="off" onsubmit="return allDataValidate();">
             <div class="form-group">
                 <label for="id" class=col-form-label">
                     User ID
@@ -46,7 +62,9 @@
             <div style="float: right;">
                 <button type="submit" class="btn btn-primary">OK</button>
                 <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}';" >Cancel</button>
-            </div> 
+            </div>
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" style="color: green;" />
         </form>
     </div>
 {% endblock %}

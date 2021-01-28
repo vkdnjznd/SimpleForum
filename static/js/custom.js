@@ -14,6 +14,14 @@ function openRegisterPage(step){
         }
         var token_url = current_url + "/" + "getRegisterToken";
         var token;
+        // get csrf_token and setup ajax before post request
+        var csrf_token = $('input[name="ag_csrf_token"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        });
+
         $.ajax({
             type: "POST",
             url: token_url,
@@ -40,7 +48,6 @@ function checkSpace(str) {
         return false; 
     } 
 }
-
 
 function idValidator(){
     const MIN_LENGTH = 4;
@@ -71,8 +78,33 @@ function idValidator(){
             }
         }
     }
+    if (message.length == 0) {
+        var current_url = location.protocol + "//" + location.host;
+        var checkid_url = current_url + "/" + "checkDuplicated_ID";
+        var csrf_token = $('input[name="csrf_token"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        });
 
-    // DB 중복검사 필요
+        $.ajax({
+            type: "POST",
+            url: checkid_url,
+            async: false,
+            data: {'id' : id},
+            dataType: "JSON",
+            success: function(res){
+                console.log(res)
+                if (res['result'] != "True")
+                    message = "Duplicated ID";
+            },
+            error: function(request, status, error){
+                console.log(request.status);
+            }
+        });
+    }
+    
     if (! message.length == 0){
         ele.style.color = "red";
         ele.style.backgroundImage = "url(static/image/x2.png)";
@@ -215,6 +247,21 @@ function pcValidator(){
     $('#password_c').attr('title', message);
     return;
 };
+
+function allDataValidate(){
+    var inputs = document.getElementsByTagName("input");
+    for (var i = 0; i < inputs.length; i++){
+        var input = inputs.item(i);
+        var color = input.style.color;
+        if (!(color === "green") || color == undefined || input.length == 0){
+            alert('Check this input');
+            input.focus();
+            return false;
+        }
+    }
+
+    return true;
+}
 
 function setTooltipHTML(type, min, max){
     if (type == 'id'){

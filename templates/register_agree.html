@@ -1,4 +1,4 @@
-{% extends "register_base.html" %}
+{% extends "register_layout.html" %}
 
 {% block content %}
     <div class="center_container">
@@ -24,5 +24,6 @@
             <button type="button" class="btn btn-primary btn-md" onclick="openRegisterPage('create');">Next</button>
             <button type="button" class="btn btn-secondary btn-md" onclick="window.location.href='{{ url_for('index') }}';" >Cancel</button>
         </div>
+        <input type="hidden" name="ag_csrf_token" value="{{ csrf_token() }}" />
     </div>
 {% endblock %}
