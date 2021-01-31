@@ -23,8 +23,11 @@ class User(db.Model):
         self.password = password
 
     # convert QueryObject to Dict
-    def as_dict(self):
-        return {x.name: getattr(self, x.name) for x in self.__table__.columns}
+    def as_dict(self, row):
+        dict = row.__dict__
+        del dict['_sa_instance_state'] # delete sqlalchemy instance info
+
+        return dict
 
     def add_user(self):
         new_user = User(self.user_id, self.nickname, self.password)
@@ -45,7 +48,10 @@ class User(db.Model):
             elif (update_type == 'lastlogin'):
                 id.lastlogin = datetime.now()
             elif (update_type == 'loginstate'):
-                id.loginstate = not id.loginstate
+                if (not id.loginstate or id.loginstate is None):
+                    id.loginstate = True
+                else:
+                    id.loginstate = False
             
             db.session.commit()
 
@@ -53,3 +59,13 @@ class User(db.Model):
         self.query.filter_by(user_id = user_id).delete()
         db.session.commit()
 
+    def get_userinfo(self, user_id = ""):
+        if (not user_id):
+            user_id = self.user_id
+        
+        row = self.query.filter_by(user_id = user_id).first()
+        if row is None:
+            raise ValueError
+        else:
+            return self.as_dict(row)
+    

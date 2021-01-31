@@ -21,7 +21,7 @@
         </div>
 
         <div class="footer" style="float:right;">
-            <button type="button" class="btn btn-primary btn-md" onclick="openRegisterPage('create');">Next</button>
+            <button type="button" class="btn btn-primary btn-md" id="registerNextBtn">Next</button>
             <button type="button" class="btn btn-secondary btn-md" onclick="window.location.href='{{ url_for('index') }}';" >Cancel</button>
         </div>
         <input type="hidden" name="ag_csrf_token" value="{{ csrf_token() }}" />

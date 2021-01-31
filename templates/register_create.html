@@ -12,13 +12,10 @@
                     trigger: 'hover focus'
                 }
             );
-            setTooltipHTML('id', 4, 16);
-            setTooltipHTML('nickname', 2, 16);
-            setTooltipHTML('password', 8, 32);
         });
     </script>
     <div class="center_container">
-        <form method="POST" autocomplete="off" onsubmit="return allDataValidate();">
+        <form method="POST" autocomplete="off" id="createForm">
             <div class="form-group">
                 <label for="id" class=col-form-label">
                     User ID
@@ -27,7 +24,7 @@
                         <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                     </svg>
                 </label>
-                <input type="text" class="form-control" spellcheck="false" id="id" name="id" placeholder="Your ID" required="required" data-toggle="tooltip" onkeyup="idValidator();" />
+                <input type="text" class="form-control" spellcheck="false" id="id" name="id" placeholder="Your ID" required="required" data-toggle="tooltip" />
             </div>
             
 
@@ -39,7 +36,7 @@
                         <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                     </svg>
                 </label>
-                <input type="text" class="form-control" spellcheck="false" id="nickname" name="nickname" placeholder="Your Nickname" required="required" data-toggle="tooltip" onkeyup="nickValidator();" />
+                <input type="text" class="form-control" spellcheck="false" id="nickname" name="nickname" placeholder="Your Nickname" required="required" data-toggle="tooltip" />
             </div>
 
             <div class="form-group">
@@ -50,13 +47,13 @@
                         <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                     </svg>
                 </label>
-                <input type="password" class="form-control" spellcheck="false" id="password" name="password" placeholder="Password " required="required" data-toggle="tooltip" onkeyup="pValidator();" />
+                <input type="password" class="form-control" spellcheck="false" id="password" name="password" placeholder="Password " required="required" data-toggle="tooltip" />
             </div>
         
 
             <div class="form-group">
                 <label for="password_c" class=col-form-label">Password Confirm</label>
-                <input type="password" class="form-control" spellcheck="false" id="password_c" name="password_c" placeholder="Password Confirm" required="required" data-toggle="tooltip" onkeyup="pcValidator();" />
+                <input type="password" class="form-control" spellcheck="false" id="password_c" name="password_c" placeholder="Password Confirm" required="required" data-toggle="tooltip" />
             </div>
             
             <div style="float: right;">

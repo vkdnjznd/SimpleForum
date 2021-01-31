@@ -6,7 +6,7 @@ import re
 from schema import models
 from Cryptodome import Random
 from Cryptodome.Cipher import AES
-from datetime import datetime, timedelta
+from datetime import datetime
 
 REGISTER_SECRET_KEY = "REGISTER_SECRET_KEY"
 MAINTAIN_TIME_MIN = 3 * 60.0;
@@ -43,11 +43,12 @@ class RegisterCipher:
         return (datetime.strptime(self.genTime, '%Y-%m-%d %H:%M:%S.%f') - datetime.strptime(now, '%Y-%m-%d %H:%M:%S.%f')).seconds >= MAINTAIN_TIME_MIN
 
 
-class RegisterValidator:
+class AccountValidator:
     def __init__(self, data, check_list = ['all']):
         self.result = True
         self.check_list = ['id', 'nickname', 'password', 'password_c']
-
+        self.isDupchecked = False
+        
         if (check_list[0] != 'all'):
             self.check_list = check_list
 
@@ -89,22 +90,26 @@ class RegisterValidator:
         
         return pos
 
-    def validate_id(self):
-        MIN_LENGTH = 4
-        MAX_LENGTH = 16
-        
-        # duplicate check
+    def is_duplicated(self):
+        self.isDupchecked = True
         user = models.User(None, None, None)
         id = user.query.filter_by(user_id = self.id).first()
 
         if (id is not None):
-            self.result = False
-            return
+            return True
+        else:
+            return False
+
+    def validate_id(self):
+        MIN_LENGTH = 4
+        MAX_LENGTH = 16
         
-        # if only duplicate check
-        if (len(self.check_list) == 1):
+        if (not self.isDupchecked and self.is_duplicated()):
+            self.result = False
+        
+        if (len(self.check_list) == 1): # if only duplicate check
             return
- 
+
         if (self.check_regexps('id') is not None):
             self.result = False
         elif (len(self.id) < MIN_LENGTH or len(self.id) > MAX_LENGTH):
@@ -127,7 +132,7 @@ class RegisterValidator:
             self.result = False
         elif (len(self.password) < MIN_LENGTH or len(self.password) > MAX_LENGTH):
             self.result = False
-        elif (self.password != self.confrim_password):
+        elif (self.confrim_password and self.password != self.confrim_password):
             self.result = False
     
     def validate(self):
@@ -140,9 +145,7 @@ class RegisterValidator:
 
 
 if __name__ == "__main__":
-    data = {'id' : 123, 'password' : 1234}
-    key = ['password', 'id']
-    if set(data.keys()).difference(key) == set():
-        print('a')
-    else:
-        print('b')
+    data = {'id' : 'aaaaa1'}
+    validator = AccountValidator(data, ['id'])
+    validator.validate()
+    print(validator.result)
