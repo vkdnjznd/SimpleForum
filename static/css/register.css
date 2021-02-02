@@ -57,3 +57,7 @@ textarea.form-control-lg{
     max-width: 400px !important;
     overflow: auto;
 }
+
+a:link { color: black; text-decoration: none !important;}
+a:visited { color: black; text-decoration: none !important;}
+a:hover { color: #4b70fd; text-decoration: underline !important;}

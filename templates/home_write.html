@@ -1,0 +1,28 @@
+{% extends "home_layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <form method="POST">
+            <table class="table table-bordered small">
+                <thead>
+                    <caption class="text-center" style="caption-side:top;">Add New Post</caption>
+                </thead>
+                <tbody>
+                    <form method="POST" autocomplete="off">
+                        <tr>
+                            <td>Title</td>
+                            <td><input type="text" name="title" size="24" spellcheck="false"></td>
+                        </tr>
+                        <tr>
+                            <td>Contents</td>
+                            <td><textarea name="content" colspan="10" class="form-control" spellcheck="false"></textarea></td>
+                        </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary" id="postBtn">POST</button>
+                <button type="button" class="btn btn-primary" id="postCancelBtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

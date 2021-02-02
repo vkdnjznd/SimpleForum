@@ -60,3 +60,7 @@ ul{
 li{
     margin-bottom: 4px;
 }
+
+a:link { color: black; text-decoration: none !important;}
+a:visited { color: black; text-decoration: none !important;}
+a:hover { color: #4b70fd; text-decoration: underline !important;}

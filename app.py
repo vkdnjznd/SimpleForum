@@ -20,10 +20,16 @@ def make_session_permanent():
 
 @app.route('/', methods=['GET'])
 def index():
+    # data = {'title' : "test3", 'contents' : "aaa", 'writer' : 'admin'}
+    nb, fb, qb, sb = models.NoticeBoard(), models.FreeBoard(), models.QuestionBoard(), models.SecretBoard()
+    post_list = [nb.get_post(0, 3), fb.get_post(0, 3), qb.get_post(0, 3), sb.get_post(0, 3)]
+
+    data = {'notice' : post_list[0], 'free' : post_list[1], 'question' : post_list[2], 'secret' : post_list[3]}
+
     if 'nickname' in session:
-        return render_template('home.html', nickname=session['nickname'])
+        return render_template('home.html', nickname=session['nickname'], data=data)
     else:
-        return render_template('home.html')
+        return render_template('home.html', data=data)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -108,6 +114,44 @@ def register():
     else:
         return redirect(url_for('index'))
 
+@app.route('/board', methods = ['GET'])
+def board():
+    params = request.args.to_dict()
+    if not params:
+        return redirect(url_for('index'))
+    
+    NUM_PER_PAGE = 10
+
+    data = {}
+    type = params['type']
+    page = int(params['page'])
+    boardNum = params.get('boardNum', "")
+    if (boardNum):
+        return "<h1>this is not created page</h1>"
+
+    else:
+        if type == 'notice':
+            nb = models.NoticeBoard()
+            data = nb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
+        elif type == 'free':
+            fb = models.FreeBoard()
+            data = fb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
+        elif type == 'question':
+            qb = models.QuestionBoard()
+            data = qb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
+        elif type == 'secret':
+            sb = models.SecretBoard()
+            data = sb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
+        else:
+            type=""
+
+    if (data):
+        return render_template('home_board.html', data=data)
+    else:
+        return render_template('home_board.html')
+
+
+
 @app.route('/getRegisterToken', methods = ['POST'])
 def genToken():
     rc = RegisterCipher()
@@ -128,11 +172,12 @@ def write():
     if request.method == 'POST':
         return render_template('write.html')
     else:
-        return render_template('write.html')
+        return render_template('home_write.html')
 
 if __name__ == '__main__':
     csrf = CSRFProtect()
     csrf.init_app(app)
     models.db.init_app(app)
+    # models.db.create_all(app=app)
 
     app.run(port=5000)

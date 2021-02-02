@@ -66,6 +66,9 @@ if($('#homeContent').length){
     var registerPageEle = document.querySelectorAll('#registerPage');
     for (var i = 0; i < registerPageEle.length; i++)
         registerPageEle[i].addEventListener('click', openRegisterAgreePage);
+}
+
+if($('#loginModal').length){
     document.querySelector('#loginBtn').addEventListener('click', loginValidator);
 }
 

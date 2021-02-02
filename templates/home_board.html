@@ -1,0 +1,47 @@
+{% extends "home_layout.html" %}
+
+{% block content %}
+    <table class="table table-striped small">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Title</th>
+                <th>Writer</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if data is defined %}
+                {% for item in data %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>{{ item['title'] }}</td>
+                    <td>{{ item['writer'] }}</td>
+                    <td>{{ item['posted_date'] }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>Empty</td>
+                    <td>Empty</td>
+                    <td>Empty</td>
+                    <td>Empty</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <hr/>
+    <br/>
+    <div style="float: right;">
+        <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('write') }}';">New Post</button>
+    </div>
+    <div>
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="/">1</a></li>
+            <li class="page-item"><a class="page-link" href="/board/2">2</a></li>
+            <li class="page-item"><a class="page-link" href="/board/3">3</a></li>
+            <li class="page-item"><a class="page-link" href="/board/4">4</a></li>
+            <li class="page-item"><a class="page-link" href="/board/5">5</a></li>
+        </ul>
+    </div>
+{% endblock %}
