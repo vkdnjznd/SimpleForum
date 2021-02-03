@@ -8,7 +8,13 @@ db = SQLAlchemy()
 
 # convert QueryObject to Dict
 def as_dict(rows):
-    if rows.count() == 1:
+    cnt = 0
+    try:
+        cnt = rows.count()
+    except AttributeError:
+        cnt = 1   
+
+    if cnt == 1:
         dict = rows.__dict__
         del dict['_sa_instance_state'] # delete sqlalchemy instance info
         return dict
@@ -125,12 +131,19 @@ class Board(db.Model):
         else:
             raise ValueError
     
-    def get_post(self, skip, number):
+    def get_post(self, skip, number, target_id=None):
         default_number = 10
         if (number is None):
             number = default_number
         if (skip is None):
             skip = 0
+
+        if (target_id is not None):
+            row = self.query.filter_by(id = target_id).first()
+            if row is None:
+                return {}
+            else:
+                return as_dict(row)
 
         rows = self.query.order_by(desc(self.posted_date)).offset(skip).limit(number)
         return as_dict(rows)

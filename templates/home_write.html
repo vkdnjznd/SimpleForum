@@ -8,20 +8,20 @@
                     <caption class="text-center" style="caption-side:top;">Add New Post</caption>
                 </thead>
                 <tbody>
-                    <form method="POST" autocomplete="off">
+                    <form id="writeForm" method="POST" autocomplete="off">
                         <tr>
                             <td>Title</td>
-                            <td><input type="text" name="title" size="24" spellcheck="false"></td>
+                            <td><input type="text" id="title" name="title" size="24" spellcheck="false"></td>
                         </tr>
                         <tr>
                             <td>Contents</td>
-                            <td><textarea name="content" colspan="10" class="form-control" spellcheck="false"></textarea></td>
+                            <td><textarea id="contents" name="contents" height="400" class="form-control" spellcheck="false" style="resize: none;"></textarea></td>
                         </tr>
                 </tbody>
             </table>
             <div style="text-align: center;">
-                <button type="submit" class="btn btn-primary" id="postBtn">POST</button>
-                <button type="button" class="btn btn-primary" id="postCancelBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm" id="postBtn">POST</button>
+                <button type="button" class="btn btn-primary btn-sm" id="postCancelBtn">Cancel</button>
             </div>
         </form>
     </div>

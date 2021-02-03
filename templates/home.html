@@ -4,7 +4,7 @@
     <div class="row" style="margin-bottom: 70px;">
         <div id="left-preview-board" class="col-md-5">
             <a><b>Notice</b></a>
-            <a href={{ url_for('board', type="notice", page="1", boardNum="") }} style="float: right; font-size:small">+ 더보기</a>
+            <a href={{ url_for('board', type="notice", page="1", boardNum="") }} style="float: right; font-size:small">+ More</a>
             <hr/>
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['notice']|length)): %}
@@ -18,7 +18,7 @@
         </div>
         <div id="right-preview-board" class="col-md-5">
             <a><b>Free Board</b></a>
-            <a href={{ url_for('board', type="free", page="1", boardNum="") }} style="float: right; font-size:small">+ 더보기</a>
+            <a href={{ url_for('board', type="free", page="1", boardNum="") }} style="float: right; font-size:small">+ More</a>
             <hr/>
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['free']|length)): %}
@@ -35,7 +35,7 @@
     <div class="row" style="margin-top: 70px;"">
         <div id="left-preview-board" class="col-md-5">
             <a><b>Questions</b></a>
-            <a href={{ url_for('board', type="question", page="1", boardNum="") }} style="float: right; font-size:small">+ 더보기</a>
+            <a href={{ url_for('board', type="question", page="1", boardNum="") }} style="float: right; font-size:small">+ More</a>
             <hr/>
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['question']|length)): %}
@@ -49,7 +49,7 @@
         </div>
         <div id="right-preview-board" class="col-md-5">
             <a><b>Secret Board</b></a>
-            <a href={{ url_for('board', type="secret", page="1", boardNum="") }} style="float: right; font-size:small">+ 더보기</a>
+            <a href={{ url_for('board', type="secret", page="1", boardNum="") }} style="float: right; font-size:small">+ More</a>
             <hr/>
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['secret']|length)): %}

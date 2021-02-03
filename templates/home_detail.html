@@ -1,0 +1,23 @@
+{% extends "home_layout.html" %}
+
+{% block content %}
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td colspan="2" ><h5>{{ data['title'] }}</h5></td>
+            </tr>
+            <tr>
+                <td colspan="2" height="400">{{ data['contents'] }}</td>
+            </tr>
+            <tr>
+                <td width="50">Writer</td>
+                <td height="30">{{ data['writer'] }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="float:right;">
+        <button type="button" class="btn btn-outline-dark">Update</button>
+        <button type="button" class="btn btn-outline-dark">Delete</button>
+        <button type="button" class="btn btn-outline-dark">Go to List</button>
+    </div>
+{% endblock %}

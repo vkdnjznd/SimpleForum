@@ -126,30 +126,40 @@ def board():
     type = params['type']
     page = int(params['page'])
     boardNum = params.get('boardNum', "")
-    if (boardNum):
-        return "<h1>this is not created page</h1>"
 
+    if (boardNum == ""):
+        boardNum = None
     else:
-        if type == 'notice':
-            nb = models.NoticeBoard()
-            data = nb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
-        elif type == 'free':
-            fb = models.FreeBoard()
-            data = fb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
-        elif type == 'question':
-            qb = models.QuestionBoard()
-            data = qb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
-        elif type == 'secret':
-            sb = models.SecretBoard()
-            data = sb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE)
-        else:
-            type=""
+        boardNum = int(boardNum)
+
+    if type == 'notice':
+        nb = models.NoticeBoard()
+        data = nb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+    elif type == 'free':
+        fb = models.FreeBoard()
+        data = fb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+    elif type == 'question':
+        qb = models.QuestionBoard()
+        data = qb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+    elif type == 'secret':
+        sb = models.SecretBoard()
+        data = sb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+    else:
+        type = None
+    
+    if (type is None):
+        return render_template('access_error.html')
 
     if (data):
-        return render_template('home_board.html', data=data)
+        if (boardNum):
+            return render_template('home_detail.html', data=data)
+        else:
+            return render_template('home_board.html', data=data)
     else:
-        return render_template('home_board.html')
-
+        if (boardNum):
+            return render_template('access_error.html')
+        else:
+            return render_template('home_board.html')
 
 
 @app.route('/getRegisterToken', methods = ['POST'])
