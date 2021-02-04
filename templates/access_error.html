@@ -9,8 +9,24 @@
             alert("Access Denied.\nReturn to the home page.");
             location.href = location.protocol + "//" + location.host + "/";
         }
+        function postDenied(){
+            alert("Post Denied.\nCheck your inputs.");
+            location.href = location.protocol + "//" + location.host + "/";
+        }
+        function notLogged(){
+            alert("You are not log in.\nPlease login first.");
+            history.back();
+        }
     </script>
 </head>
-<body onload="accessDenied();">
-</body>
+{% if login_error is defined %}
+    <body onload="notLogged();">
+    </body>
+{% elif post_error is defined %}
+    <body onload="postDenied();">
+    </body>
+{% else %}
+    <body onload="accessDenied();">
+    </body>
+{% endif %}
 </html>

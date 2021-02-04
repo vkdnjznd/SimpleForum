@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Table, Text, desc
-from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative.api import declared_attr
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.sqltypes import NullType
 from flask_sqlalchemy import SQLAlchemy
 
@@ -11,17 +12,28 @@ def as_dict(rows):
     cnt = 0
     try:
         cnt = rows.count()
-    except AttributeError:
-        cnt = 1   
+    except:
+        try:
+            cnt = len(rows)
+        except:
+            cnt = 1
 
-    if cnt == 1:
+    if cnt == 1:     
         dict = rows.__dict__
-        del dict['_sa_instance_state'] # delete sqlalchemy instance info
+        if 'writer_id' in dict.keys():
+            dict['writer'] = User.query.filter_by(id=dict['writer_id']).first().nickname
+            del dict['writer_id']
+
+        del dict['_sa_instance_state'] # delete sqlalchemy instance info2
         return dict
     else:
         dict_list = []
         for row in rows:
             dict = row.__dict__
+            if 'writer_id' in dict.keys():
+                dict['writer'] = User.query.filter_by(id=dict['writer_id']).first().nickname
+                del dict['writer_id']
+
             del dict['_sa_instance_state'] # delete sqlalchemy instance info
             dict_list.append(dict)
         return dict_list
@@ -72,11 +84,14 @@ class User(db.Model):
         self.query.filter_by(user_id = user_id).delete()
         db.session.commit()
 
-    def get_userinfo(self, user_id = ""):
-        if (not user_id):
+    def get_userinfo(self, user_id=None, id=None):
+        row = None
+        if (id is not None):
+            row = self.query.filter_by(id = id).first()
+        elif (user_id is None):
             user_id = self.user_id
-        
-        row = self.query.filter_by(user_id = user_id).first()
+            row = self.query.filter_by(user_id = user_id).first()
+
         if row is None:
             raise ValueError
         else:
@@ -90,7 +105,7 @@ class Board(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True, autoincrement=True)
     title = db.Column(db.String(32), nullable = False)
     contents = db.Column(db.Text, nullable = False)
-    writer = db.Column(db.String(16), nullable = False)
+    writer_id = db.Column(db.Integer, nullable = False)
     posted_date = db.Column(db.DateTime, nullable = False, default = db.func.now())
 
     def __init__(self, data={}):
@@ -102,8 +117,8 @@ class Board(db.Model):
             else:
                 self.title = data['title']
                 self.contents = data['contents']
-                self.writer = data['writer']
-                self.created_date = datetime.now()
+                self.writer_id = data['writer_id']
+                self.posted_date = datetime.now()
         else:
             self.postable = False
     
@@ -124,8 +139,8 @@ class Board(db.Model):
             before_data = self.query.filter_by(id = id).first()
             before_data.title = new_data['title']
             before_data.contents = new_data['contents']
-            before_data.writer = new_data['writer']
-            before_data.created_date = datetime.now()
+            before_data.writer_id = new_data['writer_id']
+            before_data.posted_date = datetime.now()
 
             db.session.commit()
         else:
@@ -144,9 +159,12 @@ class Board(db.Model):
                 return {}
             else:
                 return as_dict(row)
-
-        rows = self.query.order_by(desc(self.posted_date)).offset(skip).limit(number)
-        return as_dict(rows)
+        
+        rows = self.query.order_by(desc(self.posted_date)).offset(skip).limit(number).all()
+        if len(rows) == 1:
+            return [as_dict(rows[0])]
+        else:
+            return as_dict(rows)
 
 class NoticeBoard(Board):
     __tablename__ = 'noticeBoard_tb'

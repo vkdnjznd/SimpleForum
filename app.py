@@ -2,6 +2,7 @@
 from flask import Flask, json, render_template, request, redirect, url_for, session, jsonify
 from flask_wtf.csrf import CSRFProtect, validate_csrf
 from flask_bcrypt import Bcrypt
+from functools import wraps
 from datetime import timedelta
 
 from register_security import *
@@ -17,6 +18,14 @@ def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes = 5)
 
+def login_required(f):
+    @wraps(f)
+    def check_login(*args, **kwargs):
+        if 'id' in session:
+            return f(*args, **kwargs)
+        else:
+            return render_template('access_error.html', login_error=True)
+    return check_login
 
 @app.route('/', methods=['GET'])
 def index():
@@ -25,11 +34,9 @@ def index():
     post_list = [nb.get_post(0, 3), fb.get_post(0, 3), qb.get_post(0, 3), sb.get_post(0, 3)]
 
     data = {'notice' : post_list[0], 'free' : post_list[1], 'question' : post_list[2], 'secret' : post_list[3]}
+    data['nickname'] = session.get('nickname', None)
 
-    if 'nickname' in session:
-        return render_template('home.html', nickname=session['nickname'], data=data)
-    else:
-        return render_template('home.html', data=data)
+    return render_template('home.html', data=data)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -52,18 +59,22 @@ def login():
             if (bcrypt.check_password_hash(password, data['password'])):
                 login_result = 'OK'
                 nickname = userinfo['nickname']
-                session['id'] = data['id']
+                session['id'] = userinfo['id']
+                session['user_id'] = data['id']
                 session['nickname'] = nickname
+
                 user.update_user(data['id'], None, "lastlogin")
                 user.update_user(data['id'], None, "loginstate")
             
     return jsonify({'result' : login_result})
 
 @app.route('/logout', methods=['GET'])
+@login_required
 def logout():
     user = models.User(session['id'], 'None', 'None')
     user.update_user(session['id'], None, "loginstate")
     session.pop('id', None)
+    session.pop('user_id', None)
     session.pop('nickname', None)
 
     return redirect(url_for('index'))
@@ -131,35 +142,82 @@ def board():
         boardNum = None
     else:
         boardNum = int(boardNum)
-
+    
     if type == 'notice':
         nb = models.NoticeBoard()
-        data = nb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        data['post'] = nb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
     elif type == 'free':
         fb = models.FreeBoard()
-        data = fb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        data['post'] = fb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
     elif type == 'question':
         qb = models.QuestionBoard()
-        data = qb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        data['post'] = qb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
     elif type == 'secret':
         sb = models.SecretBoard()
-        data = sb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        data['post'] = sb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
     else:
         type = None
     
     if (type is None):
         return render_template('access_error.html')
 
+    data['nickname'] = session.get('nickname', None)
     if (data):
         if (boardNum):
             return render_template('home_detail.html', data=data)
         else:
-            return render_template('home_board.html', data=data)
+            return render_template('home_board.html', data=data, type=type)
     else:
         if (boardNum):
             return render_template('access_error.html')
         else:
-            return render_template('home_board.html')
+            return render_template('home_board.html', type=type)
+
+@app.route('/board_write', methods=['GET', 'POST'])
+@login_required
+def write():
+    if request.method == 'POST':
+        data = formdata_to_dict(request.form)
+        type = data['boardType'].lower()
+        if (not type):
+            return redirect(url_for('board', type="notice", page="1"))
+
+        MAX_TITLE_LENGTH = 32;
+        MAX_CONTENTS_LENGTH = 300;
+
+        # length validate
+        t_len, c_len = map(len, [data['title'], data['contents']])
+        if (not t_len or not c_len or t_len > MAX_TITLE_LENGTH or c_len > MAX_CONTENTS_LENGTH):
+            return render_template('access_error.html', post_error=True)
+
+        # add writer in session id
+        if 'id' in session.keys():
+            data['writer_id'] = session.get('id')
+        else:
+            return redirect(url_for('board', type="notice", page="1"))
+
+        if type == 'notice':
+            nb = models.NoticeBoard(data)
+            nb.add_post()
+        elif type == 'free':
+            fb = models.FreeBoard(data)
+            fb.add_post()
+        elif type == 'question':
+            qb = models.QuestionBoard(data)
+            qb.add_post()
+        elif type == 'secret':
+            data['password'] = data.get('password', 1234) # default password 1234
+            sb = models.SecretBoard(data)
+            sb.add_post()
+        else:
+            type = None
+
+        return redirect(url_for('board', type=type, page="1"))
+    else:
+        data = {}
+        data['nickname'] = session.get('nickname', None)
+        return render_template('home_write.html', data=data)
+
 
 
 @app.route('/getRegisterToken', methods = ['POST'])
@@ -177,17 +235,10 @@ def checkID():
     return jsonify({'result' : str(validator.result)})
 
 
-@app.route('/write', methods=['GET', 'POST'])
-def write():
-    if request.method == 'POST':
-        return render_template('write.html')
-    else:
-        return render_template('home_write.html')
-
 if __name__ == '__main__':
     csrf = CSRFProtect()
     csrf.init_app(app)
     models.db.init_app(app)
-    # models.db.create_all(app=app)
+    models.db.create_all(app=app)
 
     app.run(port=5000)

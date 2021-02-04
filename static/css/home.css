@@ -64,3 +64,5 @@ li{
 a:link { color: black; text-decoration: none !important;}
 a:visited { color: black; text-decoration: none !important;}
 a:hover { color: #4b70fd; text-decoration: underline !important;}
+
+.dropdown-menu a:hover, .dropdown-menu a:focus { background-color: lightgray;}

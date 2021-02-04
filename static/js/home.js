@@ -1,13 +1,5 @@
 import { loginValidate } from './register.js';
 
-function openRegisterAgreePage(){
-    var current_url = location.protocol + "//" + location.host;
-    var register_url = current_url + "/register";
-    var step = "agree";
-
-    location.href = register_url + "?step=" + step;
-}
-
 function login(id, password){
     var current_url = location.protocol + "//" + location.host;
     var login_url = current_url + '/' + "login";
@@ -62,12 +54,6 @@ function loginValidator(){
 }
 
 // event Listeners
-if($('#homeContent').length){
-    var registerPageEle = document.querySelectorAll('#registerPage');
-    for (var i = 0; i < registerPageEle.length; i++)
-        registerPageEle[i].addEventListener('click', openRegisterAgreePage);
-}
-
 if($('#loginModal').length){
     document.querySelector('#loginBtn').addEventListener('click', loginValidator);
 }
@@ -80,6 +66,7 @@ if($('#logoutBtn').length){
     })
 }
 
+// functions for writing new post
 if($('#writeForm').length){
     const MAX_TITLE_LENGTH = 32;
     const MAX_CONTENTS_LENGTH = 300;
@@ -89,10 +76,6 @@ if($('#writeForm').length){
         if (title_len > MAX_TITLE_LENGTH){
             alert("Maximum title length must be at most "+ MAX_TITLE_LENGTH);
             this.value = this.value.substr(0, MAX_TITLE_LENGTH);
-            this.focus();
-        }
-        else if (title_len == 0){
-            alert("Title is empty");
             this.focus();
         }
 
@@ -106,13 +89,47 @@ if($('#writeForm').length){
             this.value = this.value.substr(0, MAX_CONTENTS_LENGTH);
             this.focus();
         }
-        else if (contents_len == 0){
-            alert("contents is empty");
-            this.focus();
-        }
 
         return;
     });
+
+    document.querySelector('#writeForm').addEventListener('submit', function(event){
+        event.preventDefault();
+
+        var title_ele = document.getElementById('title');
+        var contents_ele = document.getElementById('contents');
+        var title_len = title_ele.value.length;
+        var contents_len = contents_ele.value.length;
+
+        if (0 == title_len || title_len > MAX_TITLE_LENGTH){
+            alert("Check this input");
+            title_ele.focus();
+            return;
+        }
+        else if (0 == contents_len || contents_len > MAX_CONTENTS_LENGTH){
+            alert("Check this input");
+            contents_ele.focus();
+            return;
+        }
+        else{
+            this.submit();
+        }
+        
+    });
+
+    // dropdown list eventListener
+    document.querySelector('#boardTypeMenu').addEventListener('click', function(){
+        $('.dropdown-menu').toggle();
+    });
+
+    var typeCells = document.querySelectorAll('#typeCell');
+    for (var i = 0; i < typeCells.length; i++){
+        typeCells[i].addEventListener('click', function(){
+            document.getElementById('boardTypeMenu').innerText = this.innerText;
+            $('#boardType').attr('value', this.innerText);
+            $('.dropdown-menu').toggle();
+        })
+    }
 }
 
 if($('#boardPost').length){

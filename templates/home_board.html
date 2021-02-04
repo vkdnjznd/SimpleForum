@@ -12,7 +12,7 @@
         </thead>
         <tbody>
             {% if data is defined %}
-                {% for item in data %}
+                {% for item in data['post'] %}
                 <tr id="boardPost">
                     <td id="boardPostId">{{ item['id'] }}</td>
                     <td>{{ item['title'] }}</td>
@@ -30,11 +30,11 @@
     <hr/>
     <br/>
     <div style="float: right;">
-        <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('write') }}';">New Post</button>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('write', type=type) }}';">New Post</button>
     </div>
     <div>
         <ul class="pagination justify-content-center">
-            <li class="page-item"><a class="page-link" href="/">1</a></li>
+            <li class="page-item"><a class="page-link" href={{ url_for('write', type=type) }}>1</a></li>
             <li class="page-item"><a class="page-link" href="/board/2">2</a></li>
             <li class="page-item"><a class="page-link" href="/board/3">3</a></li>
             <li class="page-item"><a class="page-link" href="/board/4">4</a></li>
