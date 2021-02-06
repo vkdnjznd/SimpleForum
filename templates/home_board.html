@@ -11,14 +11,14 @@
             </tr>
         </thead>
         <tbody>
-            {% if data is defined %}
+            {% if data['post'] is defined %}
                 {% for item in data['post'] %}
-                <tr id="boardPost">
-                    <td id="boardPostId">{{ item['id'] }}</td>
-                    <td>{{ item['title'] }}</td>
-                    <td>{{ item['writer'] }}</td>
-                    <td>{{ item['posted_date'] }}</td>
-                </tr>
+                    <tr id="boardPost">
+                        <td id="boardPostId">{{ item['id'] }}</td>
+                        <td>{{ item['title'] }}</td>
+                        <td>{{ item['writer'] }}</td>
+                        <td>{{ item['posted_date'] }}</td>
+                    </tr>
                 {% endfor %}
             {% else %}
                 <tr>

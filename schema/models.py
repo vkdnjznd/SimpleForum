@@ -1,6 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Table, Text, desc
-from sqlalchemy.ext.declarative.api import declared_attr
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Table, Text, desc, asc
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.sqltypes import NullType
 from flask_sqlalchemy import SQLAlchemy
@@ -160,7 +159,7 @@ class Board(db.Model):
             else:
                 return as_dict(row)
         
-        rows = self.query.order_by(desc(self.posted_date)).offset(skip).limit(number).all()
+        rows = list(reversed(self.query.offset(skip).limit(number).all())) # reverse list
         if len(rows) == 1:
             return [as_dict(rows[0])]
         else:

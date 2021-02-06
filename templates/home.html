@@ -23,7 +23,7 @@
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['free']|length)): %}
                     {% for items in data['free'] %}
-                        <li><a href={{ url_for('board', type="free" , boardNum=items['id']) }}>{{ items['title'] }}</a></li>
+                        <li><a href={{ url_for('board', type="free", page="1", boardNum=items['id']) }}>{{ items['title'] }}</a></li>
                     {% endfor %}
                 {% else %}
                     <li>Empty</li>
@@ -40,7 +40,7 @@
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['question']|length)): %}
                     {% for items in data['question'] %}
-                        <li><a href={{ url_for('board', type="question", boardNum=items['id']) }}>{{ items['title'] }}</a></li>
+                        <li><a href={{ url_for('board', type="question", page="1", boardNum=items['id']) }}>{{ items['title'] }}</a></li>
                     {% endfor %}
                 {% else %}
                     <li>Empty</li>
@@ -54,7 +54,7 @@
             <ul style="font-size: small;">
                 {% if ((data is defined) and (data['secret']|length)): %}
                     {% for items in data['secret'] %}
-                        <li><a href={{ url_for('board', type="secret", boardNum=items['id']) }}>{{ items['title'] }}</a></li>
+                        <li><a href={{ url_for('board', type="secret", page="1", boardNum=items['id']) }}>{{ items['title'] }}</a></li>
                     {% endfor %}
                 {% else %}
                     <li>Empty</li>

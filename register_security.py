@@ -93,9 +93,10 @@ class AccountValidator:
     def is_duplicated(self):
         self.isDupchecked = True
         user = models.User(None, None, None)
-        id = user.query.filter_by(user_id = self.id).first()
+        lower_id = user.query.filter_by(user_id = self.id.lower()).first()
+        upper_id = user.query.filter_by(user_id = self.id.upper()).first()
 
-        if (id is not None):
+        if (lower_id is not None or upper_id is not None):
             return True
         else:
             return False

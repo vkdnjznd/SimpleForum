@@ -135,10 +135,10 @@ def board():
 
     data = {}
     type = params['type']
-    page = int(params['page'])
+    page = int(params.get('page', 1))
     boardNum = params.get('boardNum', "")
 
-    if (boardNum == ""):
+    if (not boardNum):
         boardNum = None
     else:
         boardNum = int(boardNum)
