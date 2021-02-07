@@ -7,6 +7,11 @@
 
             const urlParams = new URLSearchParams(window.location.search);
             var type = urlParams.get('type');
+            if (type == 'secret')
+                $('#postPasswordArea').css('display', '');
+            else
+                $('#postPasswordArea').css('display', 'none');
+
             type = type.charAt(0).toUpperCase() + type.slice(1);
 
             document.getElementById('boardTypeMenu').innerText = type;
@@ -32,7 +37,9 @@
                                 <div class="dropdown-menu w-50" aria-labelledby="boardTypeMenu">
                                     <h6 class="dropdown-header">Select Board Type</h6>
                                     <hr class="dropdown-divider" />
-                                    <a class="dropdown-item" href="#" id="typeCell">Notice</a>
+                                    {% if data['is_admin'] is defined and data['is_admin'] is sameas true %}
+                                        <a class="dropdown-item" href="#" id="typeCell">Notice</a>
+                                    {% endif %}
                                     <a class="dropdown-item" href="#" id="typeCell">Free</a>
                                     <a class="dropdown-item" href="#" id="typeCell">Question</a>
                                     <a class="dropdown-item" href="#" id="typeCell">Secret</a>
@@ -40,9 +47,13 @@
                             </div>
                         </td>
                     </tr>
-                    <tr height="400">
+                    <tr height="300">
                         <td>Contents</td>
-                        <td><textarea id="contents" name="contents" class="form-control" rows="16" spellcheck="false" style="resize: none; font-size:medium;"></textarea></td>
+                        <td><textarea id="contents" name="contents" class="form-control" rows="14" spellcheck="false" style="resize: none; font-size:small;"></textarea></td>
+                    </tr>
+                    <tr id="postPasswordArea" style="display: none;">
+                        <td>Password</td>
+                        <td><input type="password" class="form-control" pattern="\d{4}" minlength="4" maxlength="4" placeholder="only four digits" name="postPassword" id="postPassword"></td>
                     </tr>
                 </tbody>
                 <input type="hidden" name="boardType" id="boardType" value="" />

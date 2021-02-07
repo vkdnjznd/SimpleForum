@@ -1,2 +1,2 @@
 
-    type = params['type']
+        if params['type'] == 'notice':   

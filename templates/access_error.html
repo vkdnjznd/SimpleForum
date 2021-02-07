@@ -11,10 +11,14 @@
         }
         function postDenied(){
             alert("Post Denied.\nCheck your inputs.");
-            location.href = location.protocol + "//" + location.host + "/";
+            location.href = location.protocol + "//" + location.host + "/";      
         }
         function notLogged(){
             alert("You are not log in.\nPlease login first.");
+            history.back();
+        }
+        function onlyAdmin(){
+            alert("This can only be done by the administrator.");
             history.back();
         }
     </script>
@@ -24,6 +28,9 @@
     </body>
 {% elif post_error is defined %}
     <body onload="postDenied();">
+    </body>
+{% elif auth_error is defined %}
+    <body onload="onlyAdmin();">
     </body>
 {% else %}
     <body onload="accessDenied();">

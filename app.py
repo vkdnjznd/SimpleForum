@@ -142,6 +142,13 @@ def board():
         boardNum = None
     else:
         boardNum = int(boardNum)
+        if type == 'secret':
+            if 'id' in session:
+                is_admin = models.Admin(session['id']).check_admin()
+                if (not is_admin):
+                    return redirect(url_for('board_auth', type=type, page=page, boardNum=boardNum))
+            else:
+                return redirect(url_for('board_auth', type=type, page=page, boardNum=boardNum))
     
     if type == 'notice':
         nb = models.NoticeBoard()
@@ -161,8 +168,8 @@ def board():
     if (type is None):
         return render_template('access_error.html')
 
-    data['nickname'] = session.get('nickname', None)
     if (data):
+        data['nickname'] = session.get('nickname', None)
         if (boardNum):
             return render_template('home_detail.html', data=data)
         else:
@@ -180,7 +187,7 @@ def write():
         data = formdata_to_dict(request.form)
         type = data['boardType'].lower()
         if (not type):
-            return redirect(url_for('board', type="notice", page="1"))
+            return redirect(url_for('index'))
 
         MAX_TITLE_LENGTH = 32;
         MAX_CONTENTS_LENGTH = 300;
@@ -197,8 +204,12 @@ def write():
             return redirect(url_for('board', type="notice", page="1"))
 
         if type == 'notice':
-            nb = models.NoticeBoard(data)
-            nb.add_post()
+            is_admin = models.Admin(session['id']).check_admin()
+            if (is_admin):
+                nb = models.NoticeBoard(data)
+                nb.add_post()
+            else:
+                return render_template('access_error.html', auth_error=True)
         elif type == 'free':
             fb = models.FreeBoard(data)
             fb.add_post()
@@ -206,7 +217,7 @@ def write():
             qb = models.QuestionBoard(data)
             qb.add_post()
         elif type == 'secret':
-            data['password'] = data.get('password', 1234) # default password 1234
+            data['password'] = data.get('postPassword', 1234) # default password 1234
             sb = models.SecretBoard(data)
             sb.add_post()
         else:
@@ -214,10 +225,40 @@ def write():
 
         return redirect(url_for('board', type=type, page="1"))
     else:
+        params = request.args.to_dict()
+        if not params:
+            return redirect(url_for('index'))
+
         data = {}
+        if params['type'] == 'notice':   
+            is_admin = models.Admin(session['id']).check_admin()
+            if (not is_admin):
+                return render_template('access_error.html', auth_error=True)
+            else:
+                data['is_admin'] = True
+
         data['nickname'] = session.get('nickname', None)
         return render_template('home_write.html', data=data)
 
+@app.route('/board_auth', methods=['GET', 'POST'])
+def board_auth():
+    data = {}
+    data['nickname'] = session.get('nickname', None)
+    if request.method == 'GET':
+        params = request.args.to_dict()
+        if 'type' not in params or 'boardNum' not in params:
+            return render_template('access_error.html')
+
+        return render_template('home_locked.html', data=data)
+    else:
+        dict = formdata_to_dict(request.form)
+
+        sb = models.SecretBoard()
+        data['post'] = sb.get_post(None, None, dict['boardNum'])
+        if (data['post']['password'] == dict['postPw']):
+            return render_template('home_detail.html', data=data)
+        else:
+            return render_template('access_error.html')
 
 
 @app.route('/getRegisterToken', methods = ['POST'])

@@ -1,0 +1,28 @@
+{% extends "home_layout.html" %}
+
+{% block content %}
+    <script>
+        $(document).ready(function(){
+            const urlParams = new URLSearchParams(window.location.search);
+            var type = urlParams.get('type');
+            var boardNum = urlParams.get('boardNum');
+
+            document.getElementById('type').value = type;
+            document.getElementById('boardNum').value = boardNum;
+        });
+    </script>
+    <div class="col-sm-4 col-sm-offset-4" style="text-align: center; margin: 0 auto; margin-top: 50px; ">
+        <form method="POST" autocomplete="off">
+            <p>Enter the Password</p>
+            <div class="input-group col-xs-2">
+                <input type="password" name="postPw" id="postPw" class="form-control" />
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-outline-primary" id="postAuthBtn" >Enter</button>
+                </span>
+            </div>
+            <input type="hidden" name="type" id="type" />
+            <input type="hidden" name="boardNum" id="boardNum" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        </form>
+    </div>
+{% endblock %}

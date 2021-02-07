@@ -70,6 +70,7 @@ if($('#logoutBtn').length){
 if($('#writeForm').length){
     const MAX_TITLE_LENGTH = 32;
     const MAX_CONTENTS_LENGTH = 300;
+    const urlParams = new URLSearchParams(window.location.search);
 
     document.querySelector('#title').addEventListener('keyup', function(){
         var title_len = this.value.length;
@@ -98,8 +99,24 @@ if($('#writeForm').length){
 
         var title_ele = document.getElementById('title');
         var contents_ele = document.getElementById('contents');
+        var board_type = document.getElementById('boardType').value;
+
         var title_len = title_ele.value.length;
         var contents_len = contents_ele.value.length;
+
+        if (board_type == 'Secret'){
+            var post_password = document.getElementById('postPassword').value;
+            var exp = post_password.search(/[^0-9]/g);
+
+            if (post_password.length == 0 || 4 < post_password.length){
+                alert("Post password consist of only four digits");
+                if (exp != -1)
+                    document.getElementById('postPassword').value = post_password.replace(/[^0-9]/g, "");
+
+                document.getElementById('postPassword').focus();
+                return;
+            }
+        }
 
         if (0 == title_len || title_len > MAX_TITLE_LENGTH){
             alert("Check this input");
@@ -127,9 +144,16 @@ if($('#writeForm').length){
         typeCells[i].addEventListener('click', function(){
             document.getElementById('boardTypeMenu').innerText = this.innerText;
             $('#boardType').attr('value', this.innerText);
+
+            if (this.innerText == 'Secret')
+                $('#postPasswordArea').css('display', '');
+            else
+                $('#postPasswordArea').css('display', 'none');
+
             $('.dropdown-menu').toggle();
         })
     }
+
 }
 
 if($('#boardPost').length){

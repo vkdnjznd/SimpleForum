@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Table, Text, desc, asc
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.sql.expression import true
 from sqlalchemy.sql.sqltypes import NullType
 from flask_sqlalchemy import SQLAlchemy
 
@@ -95,7 +96,37 @@ class User(db.Model):
             raise ValueError
         else:
             return as_dict(row)
+
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key = True, unique=True, autoincrement=True)
+    user_id = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, user_id, name=False):
+        if (name):
+            self.user_id = User(None, None, None).get_userinfo(user_id=user_id).first().id
+        else:
+            self.user_id = user_id
+
+    def add_admin(self):
+        new_admin = Admin(self.user_id)
+
+        db.session.add(new_admin)
+        db.session.commit()
+
+    def drop_admin(self):
+        self.query.filter_by(user_id = self.user_id).delete()
+        db.session.commit()
     
+    def check_admin(self):
+        row = self.query.filter_by(user_id = self.user_id).first()
+        if row is None:
+            return False
+        else:
+            return True
+
+        
+        
+
 
 class Board(db.Model):
     __abstract__ = True # abstract class
