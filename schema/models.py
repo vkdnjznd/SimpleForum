@@ -125,9 +125,6 @@ class Admin(db.Model):
             return True
 
         
-        
-
-
 class Board(db.Model):
     __abstract__ = True # abstract class
     __table_args__ = {'mysql_collate': 'utf8_general_ci'}
@@ -164,12 +161,11 @@ class Board(db.Model):
         db.session.commit()
 
     def update_post(self, id, new_data):
-        new_post = self(new_data)
+        new_post = Board(new_data)
         if (new_post.postable):
             before_data = self.query.filter_by(id = id).first()
             before_data.title = new_data['title']
             before_data.contents = new_data['contents']
-            before_data.writer_id = new_data['writer_id']
             before_data.posted_date = datetime.now()
 
             db.session.commit()

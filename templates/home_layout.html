@@ -95,7 +95,7 @@
                     </div>
                     <div class="panel-body">
                         {% if data['nickname'] %}
-                            <button type="button" class="btn btn-primary btn-md" id="logoutBtn">Logout</button>
+                            <button type="button" class="btn btn-primary btn-lg" id="logoutBtn">Logout</button>
                         {% else %}
                             <button type="button" class="btn btn-primary btn-md" id="modalBtn">Open Login Page</button>
                             <p style="font-size: small; color:black">If you don't have an account, <a style="color:red" href={{ url_for('register', step="agree") }}>register now!</a></p>

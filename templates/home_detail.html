@@ -1,23 +1,26 @@
 {% extends "home_layout.html" %}
 
 {% block content %}
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="detailView">
         <tbody>
             <tr>
-                <td colspan="2" ><h5>{{ data['post']['title'] }}</h5></td>
+                <td id="title" colspan="2" ><h5>{{ data['post']['title'] }}</h5></td>
             </tr>
             <tr>
-                <td colspan="2" height="400">{{ data['post']['contents'] }}</td>
+                <td id="contents" colspan="2" height="400">{{ data['post']['contents'] }}</td>
             </tr>
             <tr>
                 <td width="50">Writer</td>
                 <td height="30">{{ data['post']['writer'] }}</td>
             </tr>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         </tbody>
     </table>
-    <div style="float:right;">
-        <button type="button" class="btn btn-outline-dark">Update</button>
-        <button type="button" class="btn btn-outline-dark">Delete</button>
-        <button type="button" class="btn btn-outline-dark">Go to List</button>
-    </div>
+        <div style="float:right;">
+            {% if data['nickname'] %}
+                <button type="button" class="btn btn-outline-dark" id="postUpdateBtn">Update</button>
+                <button type="button" class="btn btn-outline-dark" id="postDeleteBtn">Delete</button>
+            {% endif %}
+            <button type="button" class="btn btn-outline-dark" id="goListBtn">Go to List</button>
+        </div>
 {% endblock %}

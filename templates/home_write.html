@@ -27,7 +27,9 @@
                 <tbody>
                     <tr>
                         <td>Title</td>
-                        <td><input type="text" id="title" name="title" size="24" spellcheck="false"></td>
+                        <td>
+                            <input type="text" id="title" name="title" size="24" spellcheck="false" value="{{ data['title'] }}">
+                        </td>
                     </tr>
                     <tr>
                         <td>Type</td>
@@ -49,13 +51,15 @@
                     </tr>
                     <tr height="300">
                         <td>Contents</td>
-                        <td><textarea id="contents" name="contents" class="form-control" rows="14" spellcheck="false" style="resize: none; font-size:small;"></textarea></td>
+                        <td><textarea id="contents" name="contents" class="form-control" rows="14" spellcheck="false" style="resize: none; font-size:small;">{{ data['contents'] }}</textarea></td>
                     </tr>
                     <tr id="postPasswordArea" style="display: none;">
                         <td>Password</td>
                         <td><input type="password" class="form-control" pattern="\d{4}" minlength="4" maxlength="4" placeholder="only four digits" name="postPassword" id="postPassword"></td>
                     </tr>
                 </tbody>
+                <input type="hidden" name="boardNum" id="boardNum" value="{{ data['boardNum'] }}" />
+                <input type="hidden" name="page" id="page" value="{{ data['page'] }}" />
                 <input type="hidden" name="boardType" id="boardType" value="" />
             </table>
             <div style="text-align: center;">

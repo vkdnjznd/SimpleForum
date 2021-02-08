@@ -1,8 +1,8 @@
 import { loginValidate } from './register.js';
 
 function login(id, password){
-    var current_url = location.protocol + "//" + location.host;
-    var login_url = current_url + '/' + "login";
+    var base_url = location.protocol + "//" + location.host;
+    var login_url = base_url + '/' + "login";
 
     var csrf_token = $('input[name="csrf_token"]').attr('value');
     $.ajaxSetup({
@@ -19,7 +19,7 @@ function login(id, password){
         dataType: "JSON",
         success: function(res){
             if (res['result'] == "OK"){
-                location.href = current_url;
+                location.href = base_url;
             }
             else{
                 alert(res['result']);
@@ -60,8 +60,8 @@ if($('#loginModal').length){
 
 if($('#logoutBtn').length){
     document.querySelector('#logoutBtn').addEventListener('click', function(){
-        var current_url = location.protocol + "//" + location.host;
-        var logout_url = current_url + '/' + "logout";
+        var base_url = location.protocol + "//" + location.host;
+        var logout_url = base_url + '/' + "logout";
         location.href = logout_url;
     })
 }
@@ -163,8 +163,8 @@ if($('#boardPost').length){
         postEle[i].addEventListener('click', function(){
             const urlParams = new URLSearchParams(window.location.search); // get parameters from current URL
             
-            var current_url = location.protocol + "//" + location.host;
-            var board_url = current_url + '/' + "board";
+            var base_url = location.protocol + "//" + location.host;
+            var board_url = base_url + '/' + "board";
             var type = urlParams.get('type');
             var page = urlParams.get('page');
             var id = this.firstElementChild.textContent;
@@ -172,4 +172,79 @@ if($('#boardPost').length){
             location.href = board_url + "?" + "type=" + type + "&page=" + page + "&boardNum=" + id;
         });    
     }
+}
+
+if($('#detailView').length){
+    if($('#postDeleteBtn').length){
+        document.querySelector('#postDeleteBtn').addEventListener('click', function(){
+            var deleteCheck = confirm('Are you sure to delete this post?');
+            if (!deleteCheck)
+                return;
+
+            const urlParams = new URLSearchParams(window.location.search); // get parameters from current URL
+            
+            var base_url = location.protocol + "//" + location.host;
+            var delete_url = base_url + '/' + "deletePost";
+            var board_url = base_url + '/' + "board";
+
+            var type = urlParams.get('type');
+            var page = urlParams.get('page');
+            var boardNum = urlParams.get('boardNum');
+
+            var csrf_token = $('input[name="csrf_token"]').attr('value');
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: delete_url,
+                async: false,
+                data: {'type' : type, 'page' : page, 'boardNum' : boardNum},
+                dataType: "JSON",
+                success: function(res){
+                    if (res['result'] == "OK"){
+                        alert("Delete Complete");
+                        location.href = board_url + "?" + "type=" + type + "&page=" + page;
+                    }
+                    else{
+                        alert(res['result']);
+                    }
+                },
+                error: function(request, status, error){
+                    console.log(request.status);
+                }
+            });
+        });
+
+        document.querySelector('#postUpdateBtn').addEventListener('click', function(){
+            const urlParams = new URLSearchParams(window.location.search); // get parameters from current URL
+            
+            var base_url = location.protocol + "//" + location.host;
+            var boardWrite_url = base_url + '/' + "board_write";
+
+            var title = document.getElementById('title').innerText;
+            var contents = document.getElementById('contents').innerText;
+            var type = urlParams.get('type');
+            var page = urlParams.get('page');
+            var boardNum = urlParams.get('boardNum');
+
+            location.href = boardWrite_url + "?" + "type=" + type + "&page=" + page + "&boardNum=" + boardNum +
+                            "&title=" + title + "&contents=" + contents;
+        });
+    }
+
+    document.querySelector('#goListBtn').addEventListener('click', function(){
+        const urlParams = new URLSearchParams(window.location.search); // get parameters from current URL
+        
+        var base_url = location.protocol + "//" + location.host;
+        var board_url = base_url + '/' + "board";
+
+        var type = urlParams.get('type');
+        var page = urlParams.get('page');
+
+        location.href = board_url + "?" + "type=" + type + "&page=" + page;
+    });
 }

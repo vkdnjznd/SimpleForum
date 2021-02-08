@@ -180,66 +180,7 @@ def board():
         else:
             return render_template('home_board.html', type=type)
 
-@app.route('/board_write', methods=['GET', 'POST'])
-@login_required
-def write():
-    if request.method == 'POST':
-        data = formdata_to_dict(request.form)
-        type = data['boardType'].lower()
-        if (not type):
-            return redirect(url_for('index'))
-
-        MAX_TITLE_LENGTH = 32;
-        MAX_CONTENTS_LENGTH = 300;
-
-        # length validate
-        t_len, c_len = map(len, [data['title'], data['contents']])
-        if (not t_len or not c_len or t_len > MAX_TITLE_LENGTH or c_len > MAX_CONTENTS_LENGTH):
-            return render_template('access_error.html', post_error=True)
-
-        # add writer in session id
-        if 'id' in session.keys():
-            data['writer_id'] = session.get('id')
-        else:
-            return redirect(url_for('board', type="notice", page="1"))
-
-        if type == 'notice':
-            is_admin = models.Admin(session['id']).check_admin()
-            if (is_admin):
-                nb = models.NoticeBoard(data)
-                nb.add_post()
-            else:
-                return render_template('access_error.html', auth_error=True)
-        elif type == 'free':
-            fb = models.FreeBoard(data)
-            fb.add_post()
-        elif type == 'question':
-            qb = models.QuestionBoard(data)
-            qb.add_post()
-        elif type == 'secret':
-            data['password'] = data.get('postPassword', 1234) # default password 1234
-            sb = models.SecretBoard(data)
-            sb.add_post()
-        else:
-            type = None
-
-        return redirect(url_for('board', type=type, page="1"))
-    else:
-        params = request.args.to_dict()
-        if not params:
-            return redirect(url_for('index'))
-
-        data = {}
-        if params['type'] == 'notice':   
-            is_admin = models.Admin(session['id']).check_admin()
-            if (not is_admin):
-                return render_template('access_error.html', auth_error=True)
-            else:
-                data['is_admin'] = True
-
-        data['nickname'] = session.get('nickname', None)
-        return render_template('home_write.html', data=data)
-
+# for secret board
 @app.route('/board_auth', methods=['GET', 'POST'])
 def board_auth():
     data = {}
@@ -260,6 +201,73 @@ def board_auth():
         else:
             return render_template('access_error.html')
 
+@app.route('/board_write', methods=['GET', 'POST'])
+@login_required
+def write():
+    if request.method == 'POST':
+        data = formdata_to_dict(request.form)
+        type = data['boardType'].lower()
+        if (not type):
+            return redirect(url_for('index'))
+
+        MAX_TITLE_LENGTH = 32;
+        MAX_CONTENTS_LENGTH = 300;
+
+        # length validate
+        t_len, c_len = map(len, [data['title'], data['contents']])
+        if (not t_len or not c_len or t_len > MAX_TITLE_LENGTH or c_len > MAX_CONTENTS_LENGTH):
+            return render_template('access_error.html', post_error=True)
+
+        data['writer_id'] = session['id']
+        board = ""
+        is_update = bool(data.get('boardNum', ""))
+
+        if type == 'notice':
+            is_admin = models.Admin(session['id']).check_admin()
+            if (is_admin):
+                board = models.NoticeBoard(data)
+            else:
+                return render_template('access_error.html', auth_error=True)
+        elif type == 'free':
+            board = models.FreeBoard(data)
+        elif type == 'question':
+            board = models.QuestionBoard(data)
+        elif type == 'secret':
+            data['password'] = data.get('postPassword')
+            board = models.SecretBoard(data)
+        
+        if (board):
+            if is_update:
+                board.update_post(data['boardNum'], data)
+                return redirect(url_for('board', type=type, page=data['page'], boardNum=data['boardNum']))
+            else:
+                board.add_post()
+                return redirect(url_for('board', type=type, page="1"))
+        else:
+            return render_template('access_error.html', post_error=True)
+
+    else:
+        params = request.args.to_dict()
+        if not params:
+            return redirect(url_for('index'))
+
+        data = {}
+        data['title'] = params.get('title', "")
+        data['contents'] = params.get('contents', "")
+        data['boardNum'] = params.get('boardNum', "")
+        data['page'] = params.get('page', 1)
+        data['nickname'] = session.get('nickname', None)
+
+        if params['type'] == 'notice':   
+            is_admin = models.Admin(session['id']).check_admin()
+            if (not is_admin):
+                return render_template('access_error.html', auth_error=True)
+            else:
+                data['is_admin'] = True
+
+        return render_template('home_write.html', data=data)
+
+
 
 @app.route('/getRegisterToken', methods = ['POST'])
 def genToken():
@@ -274,6 +282,39 @@ def checkID():
     validator = AccountValidator(data, ['id'])
     validator.validate()
     return jsonify({'result' : str(validator.result)})
+
+@app.route('/deletePost', methods=['POST'])
+@login_required
+def delete_post():
+    data = formdata_to_dict(request.form)
+    type = data['type']
+    board = ""
+    result = "You are not this post owner"
+
+    if type == 'notice':
+        is_admin = models.Admin(session['id']).check_admin()
+        if (is_admin):
+            board = models.NoticeBoard()
+    elif type == 'free':
+        board = models.FreeBoard()
+    elif type == 'question':
+        board = models.QuestionBoard()
+    elif type == 'secret':
+        board = models.SecretBoard()
+    
+    if (board):
+        post = board.query.filter_by(id = data['boardNum']).first()
+        if (post is None):
+            result = "This post is not exist"
+        else:
+            post_owner = post.writer_id
+            if (post_owner == session['id']):
+                result = "OK"
+                board.delete_post(data['boardNum'])
+        
+    return jsonify({'result' : result})
+
+        
 
 
 if __name__ == '__main__':
