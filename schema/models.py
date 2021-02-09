@@ -3,7 +3,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Tab
 from sqlalchemy.inspection import inspect
 from sqlalchemy.sql.expression import true
 from sqlalchemy.sql.sqltypes import NullType
-from flask_sqlalchemy import SQLAlchemy, model
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -28,7 +28,6 @@ def get_post(board, skip=0, number=3, target_id=None):
     else:
         tb = board.__tablename__
         rows = db.session.execute('SELECT * FROM ' + tb + ' ORDER BY ' + tb + '.posted_date DESC LIMIT ' + str(skip) + ', ' + str(number))
-        # rows = board_object.query.order_by(desc(NoticeBoard.posted_date)).offset(skip).limit(number).all() # reverse list
 
         columns = [c_attr.key for c_attr in inspect(board).mapper.column_attrs]
         items = []
