@@ -32,13 +32,11 @@
     <div style="float: right;">
         <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('write', type=type) }}';">New Post</button>
     </div>
-    <div>
+    <div style="margin-top: 20px;">
         <ul class="pagination justify-content-center">
-            <li class="page-item"><a class="page-link" href={{ url_for('write', type=type) }}>1</a></li>
-            <li class="page-item"><a class="page-link" href="/board/2">2</a></li>
-            <li class="page-item"><a class="page-link" href="/board/3">3</a></li>
-            <li class="page-item"><a class="page-link" href="/board/4">4</a></li>
-            <li class="page-item"><a class="page-link" href="/board/5">5</a></li>
+            {% for i in range(data['total_page']) %}
+                <li class="page-item"><a class="page-link" href={{ url_for('board', type=type, page=i+1, boardNum="") }}>{{ i+1 }}</a></li>
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}

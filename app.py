@@ -31,7 +31,7 @@ def login_required(f):
 def index():
     # data = {'title' : "test3", 'contents' : "aaa", 'writer' : 'admin'}
     nb, fb, qb, sb = models.NoticeBoard(), models.FreeBoard(), models.QuestionBoard(), models.SecretBoard()
-    post_list = [nb.get_post(0, 3), fb.get_post(0, 3), qb.get_post(0, 3), sb.get_post(0, 3)]
+    post_list = [models.get_post(nb), models.get_post(fb), models.get_post(qb), models.get_post(sb)]
 
     data = {'notice' : post_list[0], 'free' : post_list[1], 'question' : post_list[2], 'secret' : post_list[3]}
     data['nickname'] = session.get('nickname', None)
@@ -150,26 +150,31 @@ def board():
             else:
                 return redirect(url_for('board_auth', type=type, page=page, boardNum=boardNum))
     
+    board = ""
     if type == 'notice':
-        nb = models.NoticeBoard()
-        data['post'] = nb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        board = models.NoticeBoard()
     elif type == 'free':
-        fb = models.FreeBoard()
-        data['post'] = fb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        board = models.FreeBoard()
     elif type == 'question':
-        qb = models.QuestionBoard()
-        data['post'] = qb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        board = models.QuestionBoard()
     elif type == 'secret':
-        sb = models.SecretBoard()
-        data['post'] = sb.get_post((page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+        board = models.SecretBoard()
     else:
         type = None
     
     if (type is None):
         return render_template('access_error.html')
 
+    total_post_cnt = board.query.count()
+    data['post'] = models.get_post(board, (page - 1) * NUM_PER_PAGE, NUM_PER_PAGE, boardNum)
+    if (total_post_cnt != 0 and total_post_cnt % NUM_PER_PAGE == 0):
+        data['total_page'] = total_post_cnt // NUM_PER_PAGE
+    else:
+        data['total_page'] = total_post_cnt // NUM_PER_PAGE + 1
+  
+    data['nickname'] = session.get('nickname', None)
+
     if (data):
-        data['nickname'] = session.get('nickname', None)
         if (boardNum):
             return render_template('home_detail.html', data=data)
         else:
@@ -178,7 +183,7 @@ def board():
         if (boardNum):
             return render_template('access_error.html')
         else:
-            return render_template('home_board.html', type=type)
+            return render_template('home_board.html', data=data, type=type)
 
 # for secret board
 @app.route('/board_auth', methods=['GET', 'POST'])
@@ -195,7 +200,7 @@ def board_auth():
         dict = formdata_to_dict(request.form)
 
         sb = models.SecretBoard()
-        data['post'] = sb.get_post(None, None, dict['boardNum'])
+        data['post'] = models.get_post(sb, None, None, dict['boardNum'])
         if (data['post']['password'] == dict['postPw']):
             return render_template('home_detail.html', data=data)
         else:
@@ -321,6 +326,7 @@ if __name__ == '__main__':
     csrf = CSRFProtect()
     csrf.init_app(app)
     models.db.init_app(app)
-    models.db.create_all(app=app)
-
+    # models.db.create_all(app=app)
+    
     app.run(port=5000)
+    

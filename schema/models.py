@@ -1,42 +1,48 @@
 from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Table, Text, desc, asc
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.inspection import inspect
 from sqlalchemy.sql.expression import true
 from sqlalchemy.sql.sqltypes import NullType
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, model
 
 db = SQLAlchemy()
 
 # convert QueryObject to Dict
 def as_dict(rows):
-    cnt = 0
-    try:
-        cnt = rows.count()
-    except:
-        try:
-            cnt = len(rows)
-        except:
-            cnt = 1
+    dict = rows.__dict__
+    if 'writer_id' in dict.keys():
+        dict['writer'] = User.query.filter_by(id=dict['writer_id']).first().nickname
+        del dict['writer_id']
 
-    if cnt == 1:     
-        dict = rows.__dict__
-        if 'writer_id' in dict.keys():
-            dict['writer'] = User.query.filter_by(id=dict['writer_id']).first().nickname
-            del dict['writer_id']
+    del dict['_sa_instance_state'] # delete sqlalchemy instance info
 
-        del dict['_sa_instance_state'] # delete sqlalchemy instance info2
-        return dict
+    return dict
+
+def get_post(board, skip=0, number=3, target_id=None):
+    if (target_id is not None):
+            row = board.query.filter_by(id = target_id).first()
+            if row is None:
+                return {}
+            else:
+                return as_dict(row)
     else:
-        dict_list = []
-        for row in rows:
-            dict = row.__dict__
-            if 'writer_id' in dict.keys():
-                dict['writer'] = User.query.filter_by(id=dict['writer_id']).first().nickname
-                del dict['writer_id']
+        tb = board.__tablename__
+        rows = db.session.execute('SELECT * FROM ' + tb + ' ORDER BY ' + tb + '.posted_date DESC LIMIT ' + str(skip) + ', ' + str(number))
+        # rows = board_object.query.order_by(desc(NoticeBoard.posted_date)).offset(skip).limit(number).all() # reverse list
 
-            del dict['_sa_instance_state'] # delete sqlalchemy instance info
-            dict_list.append(dict)
-        return dict_list
+        columns = [c_attr.key for c_attr in inspect(board).mapper.column_attrs]
+        items = []
+        for row in rows:
+            item = {}
+            for idx in range(len(columns)):
+                item[columns[idx]] = row[idx]
+            items.append(item)
+        
+        for item in items:
+            item['writer'] = User.query.filter_by(id=item['writer_id']).first().nickname
+            del item['writer_id']
+        
+        return items
 
 class User(db.Model):
     __tablename__ = 'user_tb'
@@ -171,30 +177,11 @@ class Board(db.Model):
             db.session.commit()
         else:
             raise ValueError
-    
-    def get_post(self, skip, number, target_id=None):
-        default_number = 10
-        if (number is None):
-            number = default_number
-        if (skip is None):
-            skip = 0
 
-        if (target_id is not None):
-            row = self.query.filter_by(id = target_id).first()
-            if row is None:
-                return {}
-            else:
-                return as_dict(row)
-        
-        rows = list(reversed(self.query.offset(skip).limit(number).all())) # reverse list
-        if len(rows) == 1:
-            return [as_dict(rows[0])]
-        else:
-            return as_dict(rows)
 
 class NoticeBoard(Board):
     __tablename__ = 'noticeBoard_tb'
-
+    
 class FreeBoard(Board):
     __tablename__ = 'freeBoard_tb'
 
@@ -213,3 +200,18 @@ class SecretBoard(Board):
             self.password = data['password']
         else:
             self.postable = False
+
+    def update_post(self, id, new_data):
+        new_post = SecretBoard(new_data)
+        if (new_post.postable):
+            before_data = self.query.filter_by(id = id).first()
+            before_data.title = new_data['title']
+            before_data.contents = new_data['contents']
+            before_data.password = new_data['password']
+            before_data.posted_date = datetime.now()
+
+            db.session.commit()
+        else:
+            raise ValueError
+
+
